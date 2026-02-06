@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Kelas 12K</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #ff9e00;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --present: #28a745;
+            --sick: #ffc107;
+            --permit: #17a2b8;
+            --absent: #dc3545;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header-title i {
+            font-size: 2.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            margin-top: 10px;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .date-display {
+            background-color: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .app-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .select-input {
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            font-weight: 600;
+            background-color: white;
+            min-width: 200px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .attendance-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .student-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: var(--light);
+            transition: all 0.3s ease;
+            border-left: 5px solid #ddd;
+        }
+
+        .student-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-card[data-status="present"] {
+            border-left-color: var(--present);
+        }
+
+        .student-card[data-status="sick"] {
+            border-left-color: var(--sick);
+        }
+
+        .student-card[data-status="permit"] {
+            border-left-color: var(--permit);
+        }
+
+        .student-card[data-status="absent"] {
+            border-left-color: var(--absent);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .student-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .student-status-indicator {
+            font-size: 0.8rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .status-present {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--present);
+        }
+
+        .status-sick {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--sick);
+        }
+
+        .status-permit {
+            background-color: rgba(23, 162, 184, 0.2);
+            color: var(--permit);
+        }
+
+        .status-absent {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--absent);
+        }
+
+        .attendance-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .att-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .att-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-present {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .btn-sick {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+
+        .btn-permit {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 2px solid #b8daff;
+        }
+
+        .btn-absent {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .btn-active {
+            transform: scale(0.95);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+        }
+
+        .btn-present.btn-active {
+            background-color: #28a745;
+            color: white;
+            border-color: #1e7e34;
+        }
+
+        .btn-sick.btn-active {
+            background-color: #ffc107;
+            color: #212529;
+            border-color: #e0a800;
+        }
+
+        .btn-permit.btn-active {
+            background-color: #17a2b8;
+            color: white;
+            border-color: #117a8b;
+        }
+
+        .btn-absent.btn-active {
+            background-color: #dc3545;
+            color: white;
+            border-color: #bd2130;
+        }
+
+        .legend-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-present {
+            background-color: var(--present);
+        }
+
+        .legend-sick {
+            background-color: var(--sick);
+        }
+
+        .legend-permit {
+            background-color: var(--permit);
+        }
+
+        .legend-absent {
+            background-color: var(--absent);
+        }
+
+        .summary-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .subject-card {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            background-color: var(--light);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .subject-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .subject-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .attendance-count {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            color: white;
+            text-align: center;
+        }
+
+        .stat-card:nth-child(1) {
+            background-color: var(--present);
+        }
+
+        .stat-card:nth-child(2) {
+            background-color: var(--sick);
+        }
+
+        .stat-card:nth-child(3) {
+            background-color: var(--permit);
+        }
+
+        .stat-card:nth-child(4) {
+            background-color: var(--absent);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .export-section {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <i class="fas fa-user-graduate"></i>
+                <h1>ABSENSI KELAS XII-K</h1>
+            </div>
+            <p class="header-subtitle">Sistem kehadiran siswa </p>
+            <div class="date-display" id="current-date">
+                <!-- Date will be filled by JavaScript -->
+            </div>
+        </header>
+
+        <div class="app-controls">
+            <div class="filter-section">
+                <select id="subject-select" class="select-input">
+                    <option value="all">Semua Mata Pelajaran</option>
+                    <option value="agama">Agama</option>
+                    <option value="indonesia">Bahasa Indonesia</option>
+                    <option value="inggris">Bahasa Inggris</option>
+                    <option value="sejarah">Sejarah</option>
+                    <option value="pkn">PKN</option>
+                    <option value="matematika-lanjut">Matematika Lanjut</option>
+                    <option value="matematika-wajib">Matematika Wajib</option>
+                    <option value="kimia">Kimia</option>
+                    <option value="informatika">Informatika</option>
+                    <option value="biologi">Biologi</option>
+                    <option value="pkwu">PKWU</option>
+                    <option value="seni-budaya">Seni Budaya</option>
+                    <option value="penjas">Penjas</option>
+                </select>
+                
+                <select id="attendance-filter" class="select-input">
+                    <option value="all">Semua Status</option>
+                    <option value="present">Hadir</option>
+                    <option value="sick">Sakit</option>
+                    <option value="permit">Izin</option>
+                    <option value="absent">Alpa</option>
+                </select>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-success" id="save-btn">
+                    <i class="fas fa-save"></i> Simpan Absensi
+                </button>
+                <button class="btn btn-primary" id="reset-btn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-action-btn" style="background-color: #d4edda; color: #155724;" id="mark-all-present">
+                <i class="fas fa-check-circle"></i> Tandai Semua Hadir
+            </button>
+            <button class="quick-action-btn" style="background-color: #fff3cd; color: #856404;" id="mark-all-sick">
+                <i class="fas fa-head-side-cough"></i> Tandai Semua Sakit
+            </button>
+            <button class="quick-action-btn" style="background-color: #cce5ff; color: #004085;" id="mark-all-permit">
+                <i class="fas fa-envelope"></i> Tandai Semua Izin
+            </button>
+            <button class="quick-action-btn" style="background-color: #f8d7da; color: #721c24;" id="mark-all-absent">
+                <i class="fas fa-times-circle"></i> Tandai Semua Alpa
+            </button>
+        </div>
+
+        <div class="legend-container">
+            <div class="legend-item">
+                <div class="legend-color legend-present"></div>
+                <span>Hadir</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-sick"></div>
+                <span>Sakit</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-permit"></div>
+                <span>Izin</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color legend-absent"></div>
+                <span>Alpa</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="attendance-section">
+                <h2 class="section-title">
+                    <i class="fas fa-clipboard-list"></i> Daftar Siswa
+                </h2>
+                <div class="student-list" id="student-list">
+                    <!-- Student list will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-pie"></i> Ringkasan Absensi
+                </h2>
+                
+                <div class="subject-grid" id="subject-grid">
+                    <!-- Subject cards will be generated by JavaScript -->
+                </div>
+                
+                <h3 class="section-title">
+                    <i class="fas fa-chart-bar"></i> Statistik Hari Ini
+                </h3>
+                
+                <div class="stats-container" id="stats-container">
+                    <!-- Stats will be generated by JavaScript -->
+                </div>
+                
+                <div class="export-section">
+                    <button class="btn btn-warning" id="export-btn">
+                        <i class="fas fa-file-export"></i> Ekspor Data Absensi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Aplikasi Absensi Kelas 12K &copy; 2023 - SMA Negeri 1 Terbaik</p>
+            <p>Total 13 Mata Pelajaran | 10 Siswa</p>
+        </footer>
+    </div>
+
+    <script>
+        // Data siswa kelas 12K
+        const students = [
+            { id: 1, name: "Ara azmi jamaica", nis: "12001", avatar: "AR" },
+            { id: 2, name: "Ariiqah kynera ryesha", nis: "12002", avatar: "ARQ" },
+            { id: 3, name: "Afiqah dwi syabila", nis: "12003", avatar: "AFQ" },
+            { id: 4, name: "Hasriani Aulia Putri", nis: "12004", avatar: "HSR" },
+            { id: 5, name: "Nur syafina putri azura", nis: "12005", avatar: "EP" },
+            { id: 6, name: "Marsyah ridha syafina", nis: "12006", avatar: "FYN" },
+            { id: 7, name: "Muhammad Suriansyah", nis: "12007", avatar: "SR" },
+            { id: 8, name: "Vara Febrina Saputri", nis: "12008", avatar: "VR" },
+            { id: 9, name: "Nurhidayah isnaini", nis: "12009", avatar: "NHY" },
+            { id: 10, name: "Valincia Enata", nis: "12010", avatar: "VLN" }
+        ];
+
+        // Data mata pelajaran
+        const subjects = [
+            { id: "agama", name: "Agama", icon: "fas fa-pray", color: "#4361ee" },
+            { id: "indonesia", name: "Bahasa Indonesia", icon: "fas fa-book", color: "#3a0ca3" },
+            { id: "inggris", name: "Bahasa Inggris", icon: "fas fa-language", color: "#4cc9f0" },
+            { id: "sejarah", name: "Sejarah", icon: "fas fa-landmark", color: "#7209b7" },
+            { id: "pkn", name: "PKN", icon: "fas fa-flag", color: "#f72585" },
+            { id: "matematika-lanjut", name: "Matematika Lanjut", icon: "fas fa-calculator", color: "#ff9e00" },
+            { id: "matematika-wajib", name: "Matematika Wajib", icon: "fas fa-square-root-alt", color: "#ff5400" },
+            { id: "kimia", name: "Kimia", icon: "fas fa-flask", color: "#4895ef" },
+            { id: "informatika", name: "Informatika", icon: "fas fa-laptop-code", color: "#38b000" },
+            { id: "biologi", name: "Biologi", icon: "fas fa-dna", color: "#2a9d8f" },
+            { id: "pkwu", name: "PKWU", icon: "fas fa-tools", color: "#e63946" },
+            { id: "seni-budaya", name: "Seni Budaya", icon: "fas fa-palette", color: "#9d4edd" },
+            { id: "penjas", name: "Penjas", icon: "fas fa-running", color: "#06d6a0" }
+        ];
+
+        // Status kehadiran dengan informasi lengkap
+        const attendanceStatuses = [
+            { id: "present", name: "Hadir", class: "btn-present", color: "#28a745", icon: "fas fa-check-circle" },
+            { id: "sick", name: "Sakit", class: "btn-sick", color: "#ffc107", icon: "fas fa-head-side-cough" },
+            { id: "permit", name: "Izin", class: "btn-permit", color: "#17a2b8", icon: "fas fa-envelope" },
+            { id: "absent", name: "Alpa", class: "btn-absent", color: "#dc3545", icon: "fas fa-times-circle" }
+        ];
+
+        // Inisialisasi data absensi
+        let attendanceData = {};
+        
+        // Fungsi untuk menginisialisasi data absensi
+        function initializeAttendanceData() {
+            // Inisialisasi untuk setiap siswa dan setiap mata pelajaran
+            students.forEach(student => {
+                attendanceData[student.id] = {};
+                subjects.forEach(subject => {
+                    // Set default ke "present" untuk semua siswa
+                    attendanceData[student.id][subject.id] = "present";
+                });
+            });
+            
+            // Simpan ke localStorage
+            saveToLocalStorage();
+        }
+
+        // Fungsi untuk menyimpan ke localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('attendanceData12K', JSON.stringify(attendanceData));
+        }
+
+        // Fungsi untuk memuat dari localStorage
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('attendanceData12K');
+            if (savedData) {
+                attendanceData = JSON.parse(savedData);
+            } else {
+                initializeAttendanceData();
+            }
+        }
+
+        // Fungsi untuk menampilkan tanggal saat ini
+        function displayCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            const formattedDate = now.toLocaleDateString('id-ID', options);
+            document.getElementById('current-date').textContent = formattedDate;
+        }
+
+        // Fungsi untuk mendapatkan nama status dari ID
+        function getStatusName(statusId) {
+            const status = attendanceStatuses.find(s => s.id === statusId);
+            return status ? status.name : "Tidak diketahui";
+        }
+
+        // Fungsi untuk mendapatkan class CSS untuk status
+        function getStatusClass(statusId) {
+            switch(statusId) {
+                case "present": return "status-present";
+                case "sick": return "status-sick";
+                case "permit": return "status-permit";
+                case "absent": return "status-absent";
+                default: return "";
+            }
+        }
+
+        // Fungsi untuk membuat kartu siswa
+        function createStudentCard(student) {
+            const selectedSubject = document.getElementById('subject-select').value;
+            const attendanceFilter = document.getElementById('attendance-filter').value;
+            
+            // Ambil status kehadiran untuk mata pelajaran yang dipilih
+            let studentStatus = "";
+            if (selectedSubject === "all") {
+                // Jika semua mata pelajaran, ambil status untuk mata pelajaran pertama
+                studentStatus = attendanceData[student.id][subjects[0].id];
+            } else {
+                studentStatus = attendanceData[student.id][selectedSubject];
+            }
+            
+            // Filter berdasarkan status kehadiran
+            if (attendanceFilter !== 'all' && studentStatus !== attendanceFilter) {
+                return '';
+            }
+            
+            const statusName = getStatusName(studentStatus);
+            const statusClass = getStatusClass(studentStatus);
+            
+            return `
+                <div class="student-card" data-student-id="${student.id}" data-status="${studentStatus}">
+                    <div class="student-info">
+                        <div class="student-avatar" style="background-color: ${stringToColor(student.avatar)}">
+                            ${student.avatar}
+                        </div>
+                        <div>
+                            <div class="student-name">${student.name}</div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">NIS: ${student.nis}</div>
+                            <div class="student-status-indicator ${statusClass}">
+                                ${statusName}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="attendance-buttons">
+                        ${attendanceStatuses.map(status => `
+                            <button class="att-btn ${status.class} ${studentStatus === status.id ? 'btn-active' : ''}" 
+                                    data-student-id="${student.id}" 
+                                    data-status="${status.id}"
+                                    title="${status.name}">
+                                <i class="${status.icon}"></i>
+                                <span>${status.name}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Fungsi untuk membuat kartu mata pelajaran
+        function createSubjectCard(subject) {
+            // Hitung statistik untuk mata pelajaran ini
+            const stats = calculateSubjectStats(subject.id);
+            
+            return `
+                <div class="subject-card" data-subject-id="${subject.id}" style="border-top: 4px solid ${subject.color};">
+                    <div class="subject-icon">
+                        <i class="${subject.icon}"></i>
+                    </div>
+                    <div class="subject-name">${subject.name}</div>
+                    <div class="attendance-count">
+                        <div>Hadir: ${stats.present}</div>
+                        <div>Sakit: ${stats.sick}</div>
+                        <div>Izin: ${stats.permit}</div>
+                        <div>Alpa: ${stats.absent}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Fungsi untuk menghitung statistik mata pelajaran
+        function calculateSubjectStats(subjectId) {
+            let present = 0;
+            let sick = 0;
+            let permit = 0;
+            let absent = 0;
+            
+            students.forEach(student => {
+                const status = attendanceData[student.id][subjectId];
+                if (status === 'present') present++;
+                else if (status === 'sick') sick++;
+                else if (status === 'permit') permit++;
+                else if (status === 'absent') absent++;
+            });
+            
+            return { present, sick, permit, absent };
+        }
+
+        // Fungsi untuk menghitung statistik keseluruhan
+        function calculateOverallStats() {
+            let present = 0;
+            let sick = 0;
+            let permit = 0;
+            let absent = 0;
+            const selectedSubject = document.getElementById('subject-select').value;
+            
+            if (selectedSubject === 'all') {
+                // Hitung semua mata pelajaran
+                students.forEach(student => {
+                    subjects.forEach(subject => {
+                        const status = attendanceData[student.id][subject.id];
+                        if (status === 'present') present++;
+                        else if (status === 'sick') sick++;
+                        else if (status === 'permit') permit++;
+                        else if (status === 'absent') absent++;
+                    });
+                });
+            } else {
+                // Hitung hanya mata pelajaran yang dipilih
+                students.forEach(student => {
+                    const status = attendanceData[student.id][selectedSubject];
+                    if (status === 'present') present++;
+                    else if (status === 'sick') sick++;
+                    else if (status === 'permit') permit++;
+                    else if (status === 'absent') absent++;
+                });
+            }
+            
+            return { present, sick, permit, absent };
+        }
+
+        // Fungsi untuk memperbarui tampilan statistik
+        function updateStatsDisplay() {
+            const stats = calculateOverallStats();
+            const selectedSubject = document.getElementById('subject-select').value;
+            const subjectName = selectedSubject === 'all' ? 'Semua Mata Pelajaran' : 
+                subjects.find(s => s.id === selectedSubject)?.name || '';
+            
+            document.getElementById('stats-container').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.present}</div>
+                    <div class="stat-label">Hadir</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.sick}</div>
+                    <div class="stat-label">Sakit</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.permit}</div>
+                    <div class="stat-label">Izin</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.absent}</div>
+                    <div class="stat-label">Alpa</div>
+                </div>
+            `;
+            
+            // Perbarui judul dengan mata pelajaran yang dipilih
+            const titleElement = document.querySelector('.attendance-section .section-title');
+            titleElement.innerHTML = `<i class="fas fa-clipboard-list"></i> Daftar Siswa - ${subjectName}`;
+        }
+
+        // Fungsi untuk menghasilkan warna dari string
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = hash % 360;
+            return `hsl(${hue}, 70%, 65%)`;
+        }
+
+        // Fungsi untuk memperbarui tampilan daftar siswa
+        function updateStudentList() {
+            const studentListElement = document.getElementById('student-list');
+            studentListElement.innerHTML = students.map(student => createStudentCard(student)).join('');
+            
+            // Tambahkan event listener untuk tombol absensi
+            document.querySelectorAll('.att-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-student-id'));
+                    const status = this.getAttribute('data-status');
+                    const selectedSubject = document.getElementById('subject-select').value;
+                    
+                    // Update status kehadiran
+                    if (selectedSubject === 'all') {
+                        // Jika "Semua Mata Pelajaran" dipilih, update semua mata pelajaran
+                        subjects.forEach(subject => {
+                            attendanceData[studentId][subject.id] = status;
+                        });
+                    } else {
+                        // Update hanya mata pelajaran yang dipilih
+                        attendanceData[studentId][selectedSubject] = status;
+                    }
+                    
+                    saveToLocalStorage();
+                    updateStudentList();
+                    updateSubjectGrid();
+                    updateStatsDisplay();
+                    
+                    // Tampilkan notifikasi
+                    const student = students.find(s => s.id === studentId);
+                    const subject = selectedSubject === 'all' ? 'Semua Mata Pelajaran' : 
+                        subjects.find(s => s.id === selectedSubject)?.name;
+                    
+                    showNotification(`Status ${student.name} diubah menjadi "${getStatusName(status)}" untuk ${subject}`);
+                });
+            });
+        }
+
+        // Fungsi untuk memperbarui grid mata pelajaran
+        function updateSubjectGrid() {
+            const subjectGridElement = document.getElementById('subject-grid');
+            subjectGridElement.innerHTML = subjects.map(subject => createSubjectCard(subject)).join('');
+            
+            // Tambahkan event listener untuk kartu mata pelajaran
+            document.querySelectorAll('.subject-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const subjectId = this.getAttribute('data-subject-id');
+                    document.getElementById('subject-select').value = subjectId;
+                    
+                    // Trigger perubahan pada select
+                    document.getElementById('subject-select').dispatchEvent(new Event('change'));
+                });
+            });
+        }
+
+        // Fungsi untuk mengekspor data absensi
+        function exportAttendanceData() {
+            const selectedSubject = document.getElementById('subject-select').value;
+            let exportData = [];
+            
+            if (selectedSubject === 'all') {
+                // Ekspor semua mata pelajaran
+                subjects.forEach(subject => {
+                    const subjectData = {
+                        mata_pelajaran: subject.name,
+                        absensi: []
+                    };
+                    
+                    students.forEach(student => {
+                        subjectData.absensi.push({
+                            nama: student.name,
+                            nis: student.nis,
+                            status: getStatusName(attendanceData[student.id][subject.id])
+                        });
+                    });
+                    
+                    exportData.push(subjectData);
+                });
+            } else {
+                // Ekspor hanya mata pelajaran yang dipilih
+                const subject = subjects.find(s => s.id === selectedSubject);
+                const subjectData = {
+                    mata_pelajaran: subject.name,
+                    absensi: []
+                };
+                
+                students.forEach(student => {
+                    subjectData.absensi.push({
+                        nama: student.name,
+                        nis: student.nis,
+                        status: getStatusName(attendanceData[student.id][selectedSubject])
+                    });
+                });
+                
+                exportData.push(subjectData);
+            }
+            
+            // Buat file teks untuk diunduh
+            let textContent = `DATA ABSENSI KELAS 12K\n`;
+            textContent += `Tanggal: ${new Date().toLocaleDateString('id-ID')}\n\n`;
+            
+            exportData.forEach(data => {
+                textContent += `MATA PELAJARAN: ${data.mata_pelajaran}\n`;
+                textContent += `========================================\n`;
+                textContent += `No. | Nama Siswa           | NIS      | Status\n`;
+                textContent += `----|----------------------|----------|--------\n`;
+                
+                data.absensi.forEach((item, index) => {
+                    textContent += `${(index + 1).toString().padEnd(4)}| ${item.nama.padEnd(20)}| ${item.nis.padEnd(8)}| ${item.status.toUpperCase()}\n`;
+                });
+                
+                textContent += `\n\n`;
+            });
+            
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `absensi-kelas-12k-${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Data absensi berhasil diekspor!');
+        }
+
+        // Fungsi untuk mereset data absensi
+        function resetAttendanceData() {
+            if (confirm('Apakah Anda yakin ingin mereset semua data absensi? Tindakan ini tidak dapat dibatalkan.')) {
+                initializeAttendanceData();
+                updateStudentList();
+                updateSubjectGrid();
+                updateStatsDisplay();
+                showNotification('Data absensi telah direset!');
+            }
+        }
+
+        // Fungsi untuk menandai semua siswa dengan status tertentu
+        function markAllStudents(status) {
+            const selectedSubject = document.getElementById('subject-select').value;
+            
+            if (selectedSubject === 'all') {
+                // Jika "Semua Mata Pelajaran" dipilih, update semua mata pelajaran untuk semua siswa
+                students.forEach(student => {
+                    subjects.forEach(subject => {
+                        attendanceData[student.id][subject.id] = status;
+                    });
+                });
+            } else {
+                // Update hanya mata pelajaran yang dipilih untuk semua siswa
+                students.forEach(student => {
+                    attendanceData[student.id][selectedSubject] = status;
+                });
+            }
+            
+            saveToLocalStorage();
+            updateStudentList();
+            updateSubjectGrid();
+            updateStatsDisplay();
+            
+            showNotification(`Semua siswa ditandai sebagai "${getStatusName(status)}"`);
+        }
+
+        // Fungsi untuk menampilkan notifikasi sementara
+        function showNotification(message) {
+            // Hapus notifikasi sebelumnya jika ada
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Buat elemen notifikasi
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: var(--primary);
+                color: white;
+                padding: 15px 20px;
+                border-radius: var(--border-radius);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            // Tambahkan animasi CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Hapus notifikasi setelah 3 detik
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Inisialisasi aplikasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tampilkan tanggal
+            displayCurrentDate();
+            
+            // Muat data dari localStorage
+            loadFromLocalStorage();
+            
+            // Inisialisasi tampilan
+            updateStudentList();
+            updateSubjectGrid();
+            updateStatsDisplay();
+            
+            // Event listener untuk filter mata pelajaran
+            document.getElementById('subject-select').addEventListener('change', function() {
+                updateStudentList();
+                updateStatsDisplay();
+            });
+            
+            // Event listener untuk filter status kehadiran
+            document.getElementById('attendance-filter').addEventListener('change', function() {
+                updateStudentList();
+            });
+            
+            // Event listener untuk tombol simpan
+            document.getElementById('save-btn').addEventListener('click', function() {
+                saveToLocalStorage();
+                showNotification('Data absensi berhasil disimpan!');
+            });
+            
+            // Event listener untuk tombol reset
+            document.getElementById('reset-btn').addEventListener('click', resetAttendanceData);
+            
+            // Event listener untuk tombol ekspor
+            document.getElementById('export-btn').addEventListener('click', exportAttendanceData);
+            
+            // Event listener untuk tombol aksi cepat
+            document.getElementById('mark-all-present').addEventListener('click', () => markAllStudents('present'));
+            document.getElementById('mark-all-sick').addEventListener('click', () => markAllStudents('sick'));
+            document.getElementById('mark-all-permit').addEventListener('click', () => markAllStudents('permit'));
+            document.getElementById('mark-all-absent').addEventListener('click', () => markAllStudents('absent'));
+            
+            // Tambahkan efek visual saat tombol ditekan
+            document.querySelectorAll('.btn, .att-btn, .quick-action-btn').forEach(button => {
+                button.addEventListener('mousedown', function() {
+                    this.style.transform = 'translateY(1px)';
+                });
+                
+                button.addEventListener('mouseup', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
